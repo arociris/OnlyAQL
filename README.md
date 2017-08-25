@@ -1,4 +1,4 @@
-# OnlyAQL
+# OnlyAQL - An Aerospike GUI client
 
 
 A simple UI client for Aerospike DB.
