@@ -5,6 +5,7 @@ package guiComponents;
  * @author njain
  *
  */
+@SuppressWarnings("serial")
 public class CellRenderer extends javax.swing.table.DefaultTableCellRenderer {
 
 	public java.awt.Component getTableCellRendererComponent(javax.swing.JTable table, java.lang.Object value,

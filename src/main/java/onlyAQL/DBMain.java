@@ -55,6 +55,13 @@ public class DBMain {
 		client.queryPolicyDefault.sendKey = true;
 
 	}
+	
+	/**
+	 * Close the DB connection
+	 */
+	public void TerminateConnection(){
+		this.client.close();
+	}
 
 	/**
 	 * This will check the connection state
@@ -96,14 +103,8 @@ public class DBMain {
 			binList = Tools.diffBinList(binList, keyRecord.record.bins.keySet());
 
 		}
-		if (binList != null) {
+		return binList;
 
-			for (String s : binList) {
-			}
-
-			return binList;
-		}
-		return null;
 
 	}
 

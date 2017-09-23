@@ -55,10 +55,10 @@ import com.aerospike.client.AerospikeException;
 
 import onlyAQL.DBMain;
 import onlyAQL.Tools;
-import onlyAQL.UtilityService;
 
 /**
  * This will launch onlyAQL main class and the GUI
+ * 
  * @author njain
  *
  */
@@ -67,10 +67,11 @@ public class onlyAQL {
 	private JFrame frmOnlyaql;
 	private JTextField txtEnterServerIp;
 	private JTextField txtServerPort;
-	
+
 	private JTable table;
 	private JTable table_1;
 	JButton dbSubmit = new JButton("Connect");
+	JButton dbDisconnect = new JButton("Disconnect");
 	static JButton fetchFrmDB = new JButton("Fetch");
 	static JButton refreshTable = new JButton("refresh");
 	static JButton exportToExcel = new JButton("Export to Excel");
@@ -109,18 +110,18 @@ public class onlyAQL {
 	 * Initialize the contents of the frame and display the window
 	 */
 	private void initialize() {
-		
-		//Main frame
+
+		// Main frame
 		frmOnlyaql = new JFrame();
 		frmOnlyaql.setTitle("onlyAQL");
 		frmOnlyaql.setBounds(100, 100, 821, 544);
 		frmOnlyaql.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		//Top Panel
+		// Top Panel
 		JPanel panel = new JPanel();
 		frmOnlyaql.getContentPane().add(panel, BorderLayout.NORTH);
-		
-		//Layout of topPanel
+
+		// Layout of topPanel
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[] { 30, 97, 97, 10, 30, 150, 30, 30, 30, 30, 30, 0 };
 		gbl_panel.rowHeights = new int[] { 25, 0 };
@@ -129,9 +130,9 @@ public class onlyAQL {
 		gbl_panel.rowWeights = new double[] { 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
 
-		//Server IP field
+		// Server IP field
 		txtEnterServerIp = new JTextField();
-		
+
 		/*
 		 * Logic to autoclear server IP address box
 		 */
@@ -178,7 +179,7 @@ public class onlyAQL {
 				}
 			}
 		});
-		txtServerPort.setText("3000"); //Default server port
+		txtServerPort.setText("3000"); // Default server port
 		txtServerPort.setToolTipText("Enter server port. Default value 3000");
 		GridBagConstraints gbc_txtServerPort = new GridBagConstraints();
 		gbc_txtServerPort.fill = GridBagConstraints.BOTH;
@@ -188,7 +189,7 @@ public class onlyAQL {
 		panel.add(txtServerPort, gbc_txtServerPort);
 		txtServerPort.setColumns(10);
 
-		//DB Submit button
+		// DB Submit button
 		dbSubmit.setVerticalAlignment(SwingConstants.BOTTOM);
 		dbSubmit.setHorizontalAlignment(SwingConstants.LEFT);
 		GridBagConstraints gbc_dbSubmit = new GridBagConstraints();
@@ -198,8 +199,15 @@ public class onlyAQL {
 		gbc_dbSubmit.gridy = 0;
 		panel.add(dbSubmit, gbc_dbSubmit);
 		comboBox.setEditable(true);
+		
+		//DB Disconnect button
+		dbDisconnect.setVerticalAlignment(SwingConstants.BOTTOM);
+		dbDisconnect.setHorizontalAlignment(SwingConstants.LEFT);
+		panel.add(dbDisconnect, gbc_dbSubmit);
+		comboBox.setEditable(true);
+		dbDisconnect.setVisible(false);
 
-		//Set list combobox
+		// Set list combobox
 		comboBox.setVisible(false);
 		comboBox.setSelectedIndex(-1);
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
@@ -209,7 +217,7 @@ public class onlyAQL {
 		gbc_comboBox.gridy = 0;
 		panel.add(comboBox, gbc_comboBox);
 
-		//Fetch from db button
+		// Fetch from db button
 		fetchFrmDB.setVisible(false);
 		GridBagConstraints gbc_fetchFrmDB = new GridBagConstraints();
 		gbc_fetchFrmDB.insets = new Insets(0, 0, 0, 5);
@@ -217,7 +225,7 @@ public class onlyAQL {
 		gbc_fetchFrmDB.gridy = 0;
 		panel.add(fetchFrmDB, gbc_fetchFrmDB);
 
-		//Refresh table button
+		// Refresh table button
 		refreshTable.setVisible(false);
 		GridBagConstraints gbc_refreshTable = new GridBagConstraints();
 		gbc_refreshTable.insets = new Insets(0, 0, 0, 5);
@@ -227,36 +235,37 @@ public class onlyAQL {
 		gbc_refreshTable.gridy = 0;
 		panel.add(refreshTable, gbc_refreshTable);
 
-		//Tabbed pane, the main container for tables
+		// Tabbed pane, the main container for tables
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		frmOnlyaql.getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
-		//Bottom toolar
+		// Bottom toolar
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFont(new Font("Segoe UI", Font.PLAIN, 20));
 		toolBar.setFloatable(false);
 		frmOnlyaql.getContentPane().add(toolBar, BorderLayout.SOUTH);
 
-		//Export to excel button
+		// Export to excel button
 		exportToExcel.setVisible(false);
 		exportToExcel.setBackground(Color.LIGHT_GRAY);
-		
+
 		/*
 		 * Logic for export to excel button
 		 */
 		exportToExcel.addActionListener(new ActionListener() {
+			@SuppressWarnings("deprecation")
 			public void actionPerformed(ActionEvent e) {
 				if (!exportToExcel.isEnabled()) {
 					return;
 				}
-				//Select current table
+				// Select current table
 				JTable selectedTable = (JTable) ((JScrollPane) tabbedPane.getSelectedComponent()).getViewport()
 						.getComponent(0);
 
 				Path path = null;
-				//Open the FIle choose dialog
+				// Open the FIle choose dialog
 				JFileChooser fileChooser = new JFileChooser();
 				fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
 				int result = fileChooser.showOpenDialog(tabbedPane);
@@ -278,7 +287,7 @@ public class onlyAQL {
 					});
 					t.start();
 
-					//Attempting to write to excel
+					// Attempting to write to excel
 					try {
 						Tools.writeToExcell(selectedTable, path);
 					} catch (FileNotFoundException e1) {
@@ -288,7 +297,8 @@ public class onlyAQL {
 						JOptionPane.showMessageDialog(tabbedPane,
 								"Unable to write to the file due to \n" + e1.getMessage());
 					} finally {
-						//Killing the the alert message and enabling the export to excel button
+						// Killing the the alert message and enabling the export
+						// to excel button
 						Window win = SwingUtilities.getWindowAncestor(msgLbl);
 						win.setVisible(false);
 						t.stop();
@@ -301,7 +311,7 @@ public class onlyAQL {
 			}
 		});
 
-		//Table filter
+		// Table filter
 		tableFltr_lbl.setVisible(false);
 		tableFltr_lbl.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		toolBar.add(tableFltr_lbl);
@@ -316,7 +326,7 @@ public class onlyAQL {
 		toolBar.add(seperatorLbl);
 		toolBar.add(exportToExcel);
 
-		//The menue bar
+		// The menue bar
 		JMenuBar menuBar = new JMenuBar();
 		frmOnlyaql.setJMenuBar(menuBar);
 
@@ -332,7 +342,7 @@ public class onlyAQL {
 		});
 		mnNewMenu.add(mntmNewMenuItem);
 
-		//Logic to refresh the table
+		// Logic to refresh the table
 		refreshTable.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String setName = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
@@ -350,7 +360,7 @@ public class onlyAQL {
 			}
 		});
 
-		//Logic to fetch a table from DB
+		// Logic to fetch a table from DB
 		fetchFrmDB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -359,8 +369,9 @@ public class onlyAQL {
 				// tab
 
 			}
-			
-			//Logic to fetch table via CreateTableFromDB and adding it to screen 
+
+			// Logic to fetch table via CreateTableFromDB and adding it to
+			// screen
 			public void createTable(String setName) {
 				JScrollPane scrollPane = new JScrollPane((Component) null);
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -385,7 +396,7 @@ public class onlyAQL {
 
 		});
 
-		//Logic to for db connection button action
+		// Logic to for db connection button action
 		dbSubmit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// createTable();
@@ -401,41 +412,50 @@ public class onlyAQL {
 				txtEnterServerIp.getText();
 				if (!(serverIp.equals("<Server IP>"))) {
 					try {
-						//Connect to the DB
+						// Connect to the DB
 						dbConn = new DBMain(serverIp, port);
 					} catch (AerospikeException e1) {
 						JOptionPane.showMessageDialog(tabbedPane,
 								"Unable to connect to the server :" + e1.getMessage());
 						return;
 					}
-					
+
 					try {
-						//Check connection state
-						if(!dbConn.isConnected()){
+						// Check connection state
+						if (!dbConn.isConnected()) {
 							return;
 						}
 					} catch (AerospikeException e1) {
-						JOptionPane.showMessageDialog(tabbedPane,"AerospikeException - Message: " + e1.getMessage());
+						JOptionPane.showMessageDialog(tabbedPane, "AerospikeException - Message: " + e1.getMessage());
 						return;
 					} catch (Exception e1) {
-						JOptionPane.showMessageDialog(tabbedPane,"Exception - Message: " + e1.getMessage());
+						JOptionPane.showMessageDialog(tabbedPane, "Exception - Message: " + e1.getMessage());
 						return;
 					}
 
-					//Fetching ser names
+					// Fetching ser names
 					List<String> setList = dbConn.fetchSetNames();
 					Collections.sort(setList);
 
-					//Preparing dropdown list of sets
+					// Preparing dropdown list of sets
 					for (String setid : setList) {
 						comboBox.addItem(setid);
 					}
 
-					//Adding autocomplete to the combobox
+					// Adding autocomplete to the combobox
 					AutoCompleteDecorator.decorate(comboBox);
 					comboBox.setSelectedIndex(0);
 					comboBox.setVisible(true);
+					
+					//Enabling other fields
 					fetchFrmDB.setVisible(true);
+					dbSubmit.setVisible(false);
+					dbDisconnect.setVisible(true);
+					
+					//Case of reconnect in case a tab is open
+					if(tabbedPane.getTabCount()>0){
+						refreshTable.setVisible(true);
+					}
 
 				}
 
@@ -443,20 +463,59 @@ public class onlyAQL {
 
 		});
 
-		//Logic for the filtering data in table
+		// Logic to for db disconnect button action
+		dbDisconnect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+					try {
+						// Attempt disconnection
+						dbConn.TerminateConnection();
+					} catch (AerospikeException e1) {
+						JOptionPane.showMessageDialog(tabbedPane,
+								"Unable to disconnect -" + e1.getMessage());
+						return;
+					}
+
+					try {
+						// Check connection state
+						if (dbConn.isConnected()) {
+							JOptionPane.showMessageDialog(tabbedPane, "Unable to disconnect");
+							return;
+						}
+					} catch (AerospikeException e1) {
+						JOptionPane.showMessageDialog(tabbedPane, "AerospikeException - Message: " + e1.getMessage());
+						return;
+					} catch (Exception e1) {
+						JOptionPane.showMessageDialog(tabbedPane, "Exception - Message: " + e1.getMessage());
+						return;
+					}
+					
+					//Disabling fields
+					comboBox.setVisible(false);
+					fetchFrmDB.setVisible(false);
+					refreshTable.setVisible(false);
+					dbSubmit.setVisible(true);
+					dbDisconnect.setVisible(false);
+
+			}
+		});
+		
+		
+		// Logic for the filtering data in table
 		tblFltr_textField.getDocument().addDocumentListener(new DocumentListener() {
 
 			TableRowSorter<TableModel> rowSorter;
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 
-				//Fetch rowsorter object for current selected table
-				rowSorter = (TableRowSorter) ((JTable) ((JViewport) (((JScrollPane) tabbedPane.getSelectedComponent())
+				// Fetch rowsorter object for current selected table
+				rowSorter = (TableRowSorter<TableModel>) ((JTable) ((JViewport) (((JScrollPane) tabbedPane.getSelectedComponent())
 						.getComponent(0))).getComponent(0)).getRowSorter();
 				String text = tblFltr_textField.getText();
 
-				//Set the filter
+				// Set the filter
 				if (text.trim().length() == 0) {
 					rowSorter.setRowFilter(null);
 				} else {
@@ -465,16 +524,16 @@ public class onlyAQL {
 				}
 
 			}
-
 			
+			@SuppressWarnings("unchecked")
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				//Fetch rowsorter object for current selected table
-				rowSorter = (TableRowSorter) ((JTable) ((JViewport) (((JScrollPane) tabbedPane.getSelectedComponent())
+				// Fetch rowsorter object for current selected table
+				rowSorter = (TableRowSorter<TableModel>) ((JTable) ((JViewport) (((JScrollPane) tabbedPane.getSelectedComponent())
 						.getComponent(0))).getComponent(0)).getRowSorter();
 				String text = tblFltr_textField.getText();
 
-				//Set the filter
+				// Set the filter
 				if (text.trim().length() == 0) {
 					rowSorter.setRowFilter(null);
 				} else {
@@ -482,25 +541,28 @@ public class onlyAQL {
 				}
 
 			}
-
 
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				//Not required. do nothing
-				
-			}
+				// Not required. do nothing
 
+			}
 
 		});
 
 	}
 
 	/**
-	 * This method crates title panel for the newly create tab. This panel will have close button which can close the tab.
-	 * @param tabbedPane - Owner Tabbed pane of the new tab
-	 * @param scroll	- Scrollpane to be removed on closure of tab
-	 * @param title	- Title of the tab 
-	 * @return	 - Title panel with name and close button
+	 * This method crates title panel for the newly create tab. This panel will
+	 * have close button which can close the tab.
+	 * 
+	 * @param tabbedPane
+	 *            - Owner Tabbed pane of the new tab
+	 * @param scroll
+	 *            - Scrollpane to be removed on closure of tab
+	 * @param title
+	 *            - Title of the tab
+	 * @return - Title panel with name and close button
 	 */
 	private static JPanel getTitlePanel(final JTabbedPane tabbedPane, final JScrollPane scroll, String title) {
 		JPanel titlePanel = new JPanel();
@@ -528,7 +590,8 @@ public class onlyAQL {
 	}
 
 	/**
-	 * This method will disbale table components which should be visible only in case a table in displayed
+	 * This method will disbale table components which should be visible only in
+	 * case a table in displayed
 	 */
 	protected static void disableTableComponents() {
 
@@ -540,7 +603,8 @@ public class onlyAQL {
 	}
 
 	/**
-	 * This method will enable table components which should be visible only in case a table in displayed
+	 * This method will enable table components which should be visible only in
+	 * case a table in displayed
 	 */
 
 	protected static void enableTableComponents() {
