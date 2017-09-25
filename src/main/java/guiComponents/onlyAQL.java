@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -34,6 +35,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -77,10 +79,11 @@ public class onlyAQL {
 	static JButton exportToExcel = new JButton("Export to Excel");
 	JComboBox<String> comboBox = new JComboBox<String>();
 	static JLabel tableFltr_lbl = new JLabel("Search table data:");
-	JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+	
 	DBMain dbConn;
 	private static JTextField tblFltr_textField;
 	private JTable table_2;
+	private ButtonGroup radioBtnGrp = new ButtonGroup();
 
 	/**
 	 * Launch the application.
@@ -114,7 +117,7 @@ public class onlyAQL {
 		// Main frame
 		frmOnlyaql = new JFrame();
 		frmOnlyaql.setTitle("onlyAQL");
-		frmOnlyaql.setBounds(100, 100, 821, 544);
+		frmOnlyaql.setBounds(100, 100, 1024, 544);
 		frmOnlyaql.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// Top Panel
@@ -123,9 +126,9 @@ public class onlyAQL {
 
 		// Layout of topPanel
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[] { 30, 97, 97, 10, 30, 150, 30, 30, 30, 30, 30, 0 };
+		gbl_panel.columnWidths = new int[] { 30, 97, 97, 10, 83, 84, 150, 30, 30, 30, 30, 0, 30, 0 };
 		gbl_panel.rowHeights = new int[] { 25, 0 };
-		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+		gbl_panel.columnWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
 				Double.MIN_VALUE };
 		gbl_panel.rowWeights = new double[] { 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
@@ -198,14 +201,42 @@ public class onlyAQL {
 		gbc_dbSubmit.gridx = 3;
 		gbc_dbSubmit.gridy = 0;
 		panel.add(dbSubmit, gbc_dbSubmit);
-		comboBox.setEditable(true);
-		
-		//DB Disconnect button
+
+		// DB Disconnect button
 		dbDisconnect.setVerticalAlignment(SwingConstants.BOTTOM);
 		dbDisconnect.setHorizontalAlignment(SwingConstants.LEFT);
 		panel.add(dbDisconnect, gbc_dbSubmit);
-		comboBox.setEditable(true);
 		dbDisconnect.setVisible(false);
+
+		// Radio Buttons
+		JRadioButton jsonRadio = new JRadioButton("JSON");
+		jsonRadio.setActionCommand("json");
+		GridBagConstraints gbc_jsonRadio = new GridBagConstraints();
+		gbc_jsonRadio.fill = GridBagConstraints.HORIZONTAL;
+		gbc_jsonRadio.insets = new Insets(0, 0, 0, 5);
+		gbc_jsonRadio.gridx = 4;
+		gbc_jsonRadio.gridy = 0;
+		panel.add(jsonRadio, gbc_jsonRadio);
+		radioBtnGrp.add(jsonRadio);
+		jsonRadio.setVisible(false);
+
+		// Fetch from db button
+		fetchFrmDB.setVisible(false);
+
+		JRadioButton tableRadio = new JRadioButton("Table");
+		tableRadio.setActionCommand("table");
+		GridBagConstraints gbc_tableRadio = new GridBagConstraints();
+		gbc_tableRadio.fill = GridBagConstraints.HORIZONTAL;
+		gbc_tableRadio.insets = new Insets(0, 0, 0, 5);
+		gbc_tableRadio.gridx = 5;
+		gbc_tableRadio.gridy = 0;
+		panel.add(tableRadio, gbc_tableRadio);
+
+		tableRadio.setSelected(true);
+		radioBtnGrp.add(tableRadio);
+		tableRadio.setVisible(false);
+		comboBox.setEditable(true);		
+		comboBox.setEditable(true);
 
 		// Set list combobox
 		comboBox.setVisible(false);
@@ -213,15 +244,13 @@ public class onlyAQL {
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.fill = GridBagConstraints.BOTH;
 		gbc_comboBox.insets = new Insets(0, 0, 0, 5);
-		gbc_comboBox.gridx = 5;
+		gbc_comboBox.gridx = 6;
 		gbc_comboBox.gridy = 0;
 		panel.add(comboBox, gbc_comboBox);
-
-		// Fetch from db button
-		fetchFrmDB.setVisible(false);
+		
 		GridBagConstraints gbc_fetchFrmDB = new GridBagConstraints();
 		gbc_fetchFrmDB.insets = new Insets(0, 0, 0, 5);
-		gbc_fetchFrmDB.gridx = 6;
+		gbc_fetchFrmDB.gridx = 7;
 		gbc_fetchFrmDB.gridy = 0;
 		panel.add(fetchFrmDB, gbc_fetchFrmDB);
 
@@ -231,9 +260,10 @@ public class onlyAQL {
 		gbc_refreshTable.insets = new Insets(0, 0, 0, 5);
 		gbc_refreshTable.gridwidth = 3;
 		gbc_refreshTable.fill = GridBagConstraints.BOTH;
-		gbc_refreshTable.gridx = 7;
+		gbc_refreshTable.gridx = 8;
 		gbc_refreshTable.gridy = 0;
 		panel.add(refreshTable, gbc_refreshTable);
+
 
 		// Tabbed pane, the main container for tables
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -342,42 +372,29 @@ public class onlyAQL {
 		});
 		mnNewMenu.add(mntmNewMenuItem);
 
-		// Logic to refresh the table
-		refreshTable.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String setName = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
-				JScrollPane scrollPane = (JScrollPane) tabbedPane.getSelectedComponent();
-
-				table_1 = CreateTableFromDB.createTable(dbConn, setName);
-				if (Objects.isNull(table_1)) {
-					JOptionPane.showMessageDialog(tabbedPane, "No records found");
-					tabbedPane.remove(scrollPane);
-					return;
-				}
-				scrollPane.setViewportView(table_1);
-				JOptionPane.showMessageDialog(tabbedPane, "Found " + table_1.getRowCount() + " records");
-
-			}
-		});
-
 		// Logic to fetch a table from DB
 		fetchFrmDB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				String dataFormat = radioBtnGrp.getSelection().getActionCommand();
+				createTable(comboBox.getSelectedItem().toString(),dataFormat);
 
-				createTable(comboBox.getSelectedItem().toString());
-
-				// tab
 
 			}
 
 			// Logic to fetch table via CreateTableFromDB and adding it to
 			// screen
-			public void createTable(String setName) {
+			public void createTable(String setName,String format) {
 				JScrollPane scrollPane = new JScrollPane((Component) null);
 				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-				table_1 = CreateTableFromDB.createTable(dbConn, setName);
+				if(format.equals("table")){
+					table_1 = CreateTableFromDB.createTable(dbConn, setName);
+				}else if(format.equals("json")){
+					table_1 = CreateTableFromDB.createJsonTable(dbConn, setName);
+				}
+					
+				
 				if (Objects.isNull(table_1)) {
 					JOptionPane.showMessageDialog(tabbedPane, "No any records are present");
 					return;
@@ -392,6 +409,7 @@ public class onlyAQL {
 						getTitlePanel(tabbedPane, scrollPane, setName));
 				JOptionPane.showMessageDialog(tabbedPane, "Found " + table_1.getRowCount() + " records");
 				enableTableComponents();
+
 			}
 
 		});
@@ -446,14 +464,17 @@ public class onlyAQL {
 					AutoCompleteDecorator.decorate(comboBox);
 					comboBox.setSelectedIndex(0);
 					comboBox.setVisible(true);
-					
-					//Enabling other fields
+
+					// Enabling other fields
 					fetchFrmDB.setVisible(true);
 					dbSubmit.setVisible(false);
 					dbDisconnect.setVisible(true);
-					
-					//Case of reconnect in case a tab is open
-					if(tabbedPane.getTabCount()>0){
+
+					jsonRadio.setVisible(true);
+					tableRadio.setVisible(true);
+
+					// Case of reconnect in case a tab is open
+					if (tabbedPane.getTabCount() > 0) {
 						refreshTable.setVisible(true);
 					}
 
@@ -467,40 +488,61 @@ public class onlyAQL {
 		dbDisconnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-					try {
-						// Attempt disconnection
-						dbConn.TerminateConnection();
-					} catch (AerospikeException e1) {
-						JOptionPane.showMessageDialog(tabbedPane,
-								"Unable to disconnect -" + e1.getMessage());
-						return;
-					}
+				try {
+					// Attempt disconnection
+					dbConn.TerminateConnection();
+				} catch (AerospikeException e1) {
+					JOptionPane.showMessageDialog(tabbedPane, "Unable to disconnect -" + e1.getMessage());
+					return;
+				}
 
-					try {
-						// Check connection state
-						if (dbConn.isConnected()) {
-							JOptionPane.showMessageDialog(tabbedPane, "Unable to disconnect");
-							return;
-						}
-					} catch (AerospikeException e1) {
-						JOptionPane.showMessageDialog(tabbedPane, "AerospikeException - Message: " + e1.getMessage());
-						return;
-					} catch (Exception e1) {
-						JOptionPane.showMessageDialog(tabbedPane, "Exception - Message: " + e1.getMessage());
+				try {
+					// Check connection state
+					if (dbConn.isConnected()) {
+						JOptionPane.showMessageDialog(tabbedPane, "Unable to disconnect");
 						return;
 					}
-					
-					//Disabling fields
-					comboBox.setVisible(false);
-					fetchFrmDB.setVisible(false);
-					refreshTable.setVisible(false);
-					dbSubmit.setVisible(true);
-					dbDisconnect.setVisible(false);
+				} catch (AerospikeException e1) {
+					JOptionPane.showMessageDialog(tabbedPane, "AerospikeException - Message: " + e1.getMessage());
+					return;
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(tabbedPane, "Exception - Message: " + e1.getMessage());
+					return;
+				}
+
+				// Disabling fields
+				comboBox.setVisible(false);
+				fetchFrmDB.setVisible(false);
+				refreshTable.setVisible(false);
+				dbSubmit.setVisible(true);
+				dbDisconnect.setVisible(false);
+				jsonRadio.setVisible(false);
+				tableRadio.setVisible(false);
+			}
+		});
+
+
+		// Logic to refresh the table
+		refreshTable.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				String setName = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
+				JScrollPane scrollPane = (JScrollPane) tabbedPane.getSelectedComponent();
+				if(radioBtnGrp.getSelection().getActionCommand().equals("table")){
+					table_1 = CreateTableFromDB.createTable(dbConn, setName);
+				}else if(radioBtnGrp.getSelection().getActionCommand().equals("json")){
+					table_1 = CreateTableFromDB.createJsonTable(dbConn, setName);
+				}				
+				if (Objects.isNull(table_1)) {
+					JOptionPane.showMessageDialog(tabbedPane, "No records found");
+					tabbedPane.remove(scrollPane);
+					return;
+				}
+				scrollPane.setViewportView(table_1);
+				JOptionPane.showMessageDialog(tabbedPane, "Found " + table_1.getRowCount() + " records");
 
 			}
 		});
-		
-		
 		// Logic for the filtering data in table
 		tblFltr_textField.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -511,8 +553,8 @@ public class onlyAQL {
 			public void insertUpdate(DocumentEvent e) {
 
 				// Fetch rowsorter object for current selected table
-				rowSorter = (TableRowSorter<TableModel>) ((JTable) ((JViewport) (((JScrollPane) tabbedPane.getSelectedComponent())
-						.getComponent(0))).getComponent(0)).getRowSorter();
+				rowSorter = (TableRowSorter<TableModel>) ((JTable) ((JViewport) (((JScrollPane) tabbedPane
+						.getSelectedComponent()).getComponent(0))).getComponent(0)).getRowSorter();
 				String text = tblFltr_textField.getText();
 
 				// Set the filter
@@ -524,13 +566,13 @@ public class onlyAQL {
 				}
 
 			}
-			
+
 			@SuppressWarnings("unchecked")
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				// Fetch rowsorter object for current selected table
-				rowSorter = (TableRowSorter<TableModel>) ((JTable) ((JViewport) (((JScrollPane) tabbedPane.getSelectedComponent())
-						.getComponent(0))).getComponent(0)).getRowSorter();
+				rowSorter = (TableRowSorter<TableModel>) ((JTable) ((JViewport) (((JScrollPane) tabbedPane
+						.getSelectedComponent()).getComponent(0))).getComponent(0)).getRowSorter();
 				String text = tblFltr_textField.getText();
 
 				// Set the filter

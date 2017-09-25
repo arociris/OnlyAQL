@@ -77,11 +77,6 @@ public class Tools {
 
 			set1.addAll(set2);
 
-/*		if (set1.size() != set2.size()) {
-			final Set<String> larger = set1.size() > set2.size() ? set1 : set2;
-			final Set<String> smaller = larger.equals(set1) ? set2 : set1;
-			return larger.stream().filter(n -> !smaller.contains(n)).collect(Collectors.toSet());
-		}*/
 		return set1;
 	}
 
