@@ -1,5 +1,7 @@
+
 # OnlyAQL - An Aerospike GUI client for simple data accessing
 
+**Not maintained actively, feel free to raise a pull request.
 
 A simple UI client for Aerospike.
 
